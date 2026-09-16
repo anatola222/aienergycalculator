@@ -152,8 +152,9 @@ function Index() {
   const [kind, setKind] = useState<Kind>("images");
   const [platform, setPlatform] = useState(PLATFORMS[0]);
   const [imageCount, setImageCount] = useState("");
-  const [imageRes, setImageRes] = useState("Standard 1024×1024");
+  const [imageQuality, setImageQuality] = useState("Standard");
   const [clips, setClips] = useState("");
+  const [aspect, setAspect] = useState("16:9");
   const [res, setRes] = useState("720p HD");
   const [secs, setSecs] = useState("");
   const [videoAudio, setVideoAudio] = useState(false);
@@ -167,7 +168,7 @@ function Index() {
 
   function calculate() {
     let wh = 0;
-    if (kind === "images") wh = num(imageCount) * (IMAGE_WH[imageRes] ?? 1.7);
+    if (kind === "images") wh = num(imageCount) * (QUALITY_WH[imageQuality] ?? 1.7);
     if (kind === "video") {
       const per = RES_WH[res] ?? 90;
       const clipScale = num(secs) > 0 ? num(secs) / 8 : 1;
@@ -250,14 +251,12 @@ function Index() {
                   <label className="field-label">02 — How many images did you generate?</label>
                   <input type="number" min="0" value={imageCount} onChange={(e) => setImageCount(e.target.value)} placeholder="0" />
                 </div>
-                <div className="field">
-                  <label className="field-label">What resolution?</label>
-                  <select value={imageRes} onChange={(e) => setImageRes(e.target.value)}>
-                    {Object.keys(IMAGE_WH).map((r) => (
-                      <option key={r}>{r}</option>
-                    ))}
-                  </select>
-                </div>
+                <Segmented
+                  label="What quality?"
+                  value={imageQuality}
+                  onChange={setImageQuality}
+                  options={Object.keys(QUALITY_WH)}
+                />
               </>
             )}
 
@@ -270,6 +269,26 @@ function Index() {
                       <option key={r}>{r}</option>
                     ))}
                   </select>
+                </div>
+                <div className="field ar-field">
+                  <label className="field-label">Aspect Ratio</label>
+                  <div className="ar-row">
+                    {ASPECT_RATIOS.map((a) => (
+                      <button
+                        key={a.value}
+                        type="button"
+                        className={aspect === a.value ? "ar-btn is-on" : "ar-btn"}
+                        onClick={() => setAspect(a.value)}
+                        aria-pressed={aspect === a.value}
+                        aria-label={`Aspect ratio ${a.value}`}
+                      >
+                        <span className="ar-shape" style={arShape(a.w, a.h)}>
+                          {aspect === a.value && <span className="ar-check">✓</span>}
+                        </span>
+                        <span className="ar-ratio">{a.value}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 <div className="field">
                   <label className="field-label">How many clips?</label>
