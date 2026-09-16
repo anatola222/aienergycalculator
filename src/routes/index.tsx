@@ -414,24 +414,15 @@ function Index() {
               </>
             )}
 
-            {kind === "model3d" && (
-              <div className="field">
-                <label className="field-label">02 — How many models generated?</label>
-                <input type="number" min="0" value={models} onChange={(e) => setModels(e.target.value)} placeholder="0" />
-                <p className="disclaimer">
-                  3D energy data is estimated based on image-generation equivalents as no peer-reviewed data exists yet.
-                </p>
-              </div>
-            )}
-
             <div className="field">
               <label className="field-label">03 — What platform did you use?</label>
               <select value={platform} onChange={(e) => setPlatform(e.target.value)}>
-                {PLATFORMS.map((p) => (
+                {PLATFORMS[kind].map((p) => (
                   <option key={p}>{p}</option>
                 ))}
               </select>
             </div>
+
           </div>
 
           <button type="button" className="cta" onClick={calculate}>
