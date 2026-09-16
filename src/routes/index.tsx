@@ -23,7 +23,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type Kind = "images" | "video" | "audio" | "text" | "code" | "model3d";
+type Kind = "images" | "video" | "audio" | "text" | "code";
 
 const KINDS: { value: Kind; label: string }[] = [
   { value: "images", label: "AI Images" },
@@ -31,21 +31,15 @@ const KINDS: { value: Kind; label: string }[] = [
   { value: "audio", label: "AI Audio" },
   { value: "text", label: "AI Text / Chat" },
   { value: "code", label: "AI Code (Vibe Coding)" },
-  { value: "model3d", label: "AI 3D Model" },
 ];
 
-const PLATFORMS = [
-  "Runway",
-  "Kling",
-  "Google Veo / Gemini",
-  "Sora (OpenAI)",
-  "DALL·E / ChatGPT (OpenAI)",
-  "Claude (Anthropic)",
-  "Midjourney",
-  "ElevenLabs",
-  "Lovable / Cursor (Vibe Coding)",
-  "Other / Unknown",
-];
+const PLATFORMS: Record<Kind, string[]> = {
+  text: ["Claude (Anthropic)", "ChatGPT (OpenAI)", "Gemini (Google)", "Other / Unknown"],
+  video: ["Runway", "Kling", "Sora (OpenAI)", "Google Veo 3", "Other / Unknown"],
+  images: ["Midjourney", "DALL·E (OpenAI)", "Claude (Anthropic)", "Runway", "Other / Unknown"],
+  audio: ["ElevenLabs", "Suno", "Udio", "Other / Unknown"],
+  code: ["Lovable", "Codex (OpenAI)", "Claude (Anthropic)", "Cursor", "Other / Unknown"],
+};
 
 const QUALITY_WH: Record<string, number> = {
   Standard: 1.7,
@@ -59,7 +53,7 @@ const RES_WH: Record<string, number> = {
   "4K": 150,
 };
 
-const CODE_RANGES: { value: string; mid: number }[] = [
+const PROMPT_RANGES: { value: string; mid: number }[] = [
   { value: "1–10", mid: 5 },
   { value: "10–50", mid: 30 },
   { value: "50–150", mid: 100 },
@@ -67,11 +61,20 @@ const CODE_RANGES: { value: string; mid: number }[] = [
   { value: "300+", mid: 400 },
 ];
 
+const CODE_RANGES = PROMPT_RANGES;
+
 const CODE_COMPLEXITY: { value: string; sub: string; wh: number }[] = [
   { value: "Simple", sub: "short instructions, small tweaks", wh: 125 },
   { value: "Mixed", sub: "some short, some detailed", wh: 175 },
   { value: "Complex", sub: "long prompts, full feature descriptions, lots of context", wh: 300 },
 ];
+
+const TEXT_COMPLEXITY: { value: string; sub: string; wh: number }[] = [
+  { value: "Simple", sub: "short questions, quick answers", wh: 0.3 },
+  { value: "Mixed", sub: "some short, some detailed", wh: 1 },
+  { value: "Complex", sub: "long prompts, lots of context", wh: 3 },
+];
+
 
 const ASPECT_RATIOS: { value: string; w: number; h: number }[] = [
   { value: "16:9", w: 16, h: 9 },
