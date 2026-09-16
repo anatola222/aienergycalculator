@@ -361,7 +361,7 @@ function Index() {
                         aria-pressed={codeComplex === c.value}
                       >
                         <span className="cc-top">
-                          {c.emoji} {c.value}
+                          {c.value}
                         </span>
                         <span className="cc-sub">{c.sub}</span>
                       </button>
