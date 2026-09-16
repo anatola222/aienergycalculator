@@ -337,12 +337,42 @@ function Index() {
             {kind === "text" && (
               <>
                 <div className="field">
-                  <label className="field-label">02 — How many prompts / messages?</label>
-                  <input type="number" min="0" value={prompts} onChange={(e) => setPrompts(e.target.value)} placeholder="0" />
+                  <label className="field-label">02 — How many prompts did you send?</label>
+                  <div className="toggle code-range">
+                    {PROMPT_RANGES.map((r) => (
+                      <button
+                        key={r.value}
+                        type="button"
+                        className={textRange === r.value ? "toggle-btn is-on" : "toggle-btn"}
+                        onClick={() => setTextRange(r.value)}
+                        aria-pressed={textRange === r.value}
+                      >
+                        {r.value}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <Toggle label="Were any of them complex reasoning tasks?" value={complex} onChange={setComplex} />
+                <div className="field">
+                  <label className="field-label">How complex were your prompts?</label>
+                  <div className="toggle code-complex">
+                    {TEXT_COMPLEXITY.map((c) => (
+                      <button
+                        key={c.value}
+                        type="button"
+                        className={textComplex === c.value ? "toggle-btn is-on" : "toggle-btn"}
+                        onClick={() => setTextComplex(c.value)}
+                        aria-pressed={textComplex === c.value}
+                      >
+                        <span className="cc-top">{c.value}</span>
+                        <span className="cc-sub">{c.sub}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <Toggle label="Did you use a reasoning model?" value={reasoning} onChange={setReasoning} />
               </>
             )}
+
 
             {kind === "code" && (
               <>
