@@ -36,12 +36,13 @@ const KINDS: { value: Kind; label: string }[] = [
 
 const PLATFORMS = [
   "Runway",
+  "Kling",
   "Google Veo / Gemini",
-  "Midjourney",
+  "Sora (OpenAI)",
   "DALL·E / ChatGPT (OpenAI)",
   "Claude (Anthropic)",
+  "Midjourney",
   "ElevenLabs",
-  "Sora",
   "Lovable / Cursor (Vibe Coding)",
   "Other / Unknown",
 ];
@@ -73,15 +74,8 @@ const CODE_COMPLEXITY: { value: string; emoji: string; sub: string; wh: number }
 ];
 
 const ASPECT_RATIOS: { value: string; w: number; h: number }[] = [
-  { value: "21:9", w: 21, h: 9 },
   { value: "16:9", w: 16, h: 9 },
-  { value: "3:2", w: 3, h: 2 },
-  { value: "4:3", w: 4, h: 3 },
-  { value: "5:4", w: 5, h: 4 },
   { value: "1:1", w: 1, h: 1 },
-  { value: "4:5", w: 4, h: 5 },
-  { value: "3:4", w: 3, h: 4 },
-  { value: "2:3", w: 2, h: 3 },
   { value: "9:16", w: 9, h: 16 },
 ];
 
