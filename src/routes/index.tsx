@@ -67,7 +67,7 @@ const CODE_RANGES: { value: string; mid: number }[] = [
   { value: "300+", mid: 400 },
 ];
 
-const CODE_COMPLEXITY: { value: string; emoji: string; sub: string; wh: number }[] = [
+const CODE_COMPLEXITY: { value: string; sub: string; wh: number }[] = [
   { value: "Simple", sub: "short instructions, small tweaks", wh: 125 },
   { value: "Mixed", sub: "some short, some detailed", wh: 175 },
   { value: "Complex", sub: "long prompts, full feature descriptions, lots of context", wh: 300 },
