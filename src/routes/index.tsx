@@ -160,8 +160,8 @@ function fmt(n: number) {
 }
 
 function Index() {
-  const [kind, setKind] = useState<Kind>("images");
-  const [platform, setPlatform] = useState(PLATFORMS[0]);
+  const [kind, setKindRaw] = useState<Kind>("images");
+  const [platform, setPlatform] = useState(PLATFORMS.images[0]);
   const [imageCount, setImageCount] = useState("");
   const [imageQuality, setImageQuality] = useState("Standard");
   const [clips, setClips] = useState("");
@@ -170,12 +170,17 @@ function Index() {
   const [secs, setSecs] = useState("");
   const [videoAudio, setVideoAudio] = useState(false);
   const [audioMin, setAudioMin] = useState("");
-  const [prompts, setPrompts] = useState("");
-  const [complex, setComplex] = useState(false);
+  const [textRange, setTextRange] = useState("10–50");
+  const [textComplex, setTextComplex] = useState("Mixed");
+  const [reasoning, setReasoning] = useState(false);
   const [codeRange, setCodeRange] = useState("50–150");
   const [codeComplex, setCodeComplex] = useState("Mixed");
-  const [models, setModels] = useState("");
   const [result, setResult] = useState<number | null>(null);
+
+  function setKind(k: Kind) {
+    setKindRaw(k);
+    setPlatform(PLATFORMS[k][0]);
+  }
 
   function calculate() {
     let wh = 0;
@@ -187,15 +192,20 @@ function Index() {
       if (videoAudio) wh *= 1.3;
     }
     if (kind === "audio") wh = num(audioMin) * 20;
-    if (kind === "text") wh = num(prompts) * (complex ? 1.7 : 0.17);
+    if (kind === "text") {
+      const mid = PROMPT_RANGES.find((r) => r.value === textRange)?.mid ?? 5;
+      const per = TEXT_COMPLEXITY.find((c) => c.value === textComplex)?.wh ?? 1;
+      wh = mid * per;
+      if (reasoning) wh *= 10;
+    }
     if (kind === "code") {
       const mid = CODE_RANGES.find((r) => r.value === codeRange)?.mid ?? 5;
       const per = CODE_COMPLEXITY.find((c) => c.value === codeComplex)?.wh ?? 125;
       wh = mid * per;
     }
-    if (kind === "model3d") wh = num(models) * 1.7;
     setResult(wh);
   }
+
 
   const wh = result ?? 0;
   const big = wh >= 1000 ? (wh / 1000).toFixed(2) : wh < 10 ? wh.toFixed(2) : Math.round(wh).toLocaleString();
