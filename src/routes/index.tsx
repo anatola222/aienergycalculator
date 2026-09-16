@@ -68,9 +68,9 @@ const CODE_RANGES: { value: string; mid: number }[] = [
 ];
 
 const CODE_COMPLEXITY: { value: string; emoji: string; sub: string; wh: number }[] = [
-  { value: "Simple", emoji: "🪶", sub: "short instructions, small tweaks", wh: 125 },
-  { value: "Mixed", emoji: "⚡", sub: "some short, some detailed", wh: 175 },
-  { value: "Complex", emoji: "🧱", sub: "long prompts, full feature descriptions, lots of context", wh: 300 },
+  { value: "Simple", sub: "short instructions, small tweaks", wh: 125 },
+  { value: "Mixed", sub: "some short, some detailed", wh: 175 },
+  { value: "Complex", sub: "long prompts, full feature descriptions, lots of context", wh: 300 },
 ];
 
 const ASPECT_RATIOS: { value: string; w: number; h: number }[] = [
