@@ -46,6 +46,12 @@ const PLATFORMS = [
   "Other / Unknown",
 ];
 
+const IMAGE_WH: Record<string, number> = {
+  "Small 512×512": 0.05,
+  "Standard 1024×1024": 1.7,
+  "Large 1536+": 3.58,
+};
+
 const RES_WH: Record<string, number> = {
   "480p SD": 65,
   "720p HD": 90,
@@ -90,24 +96,31 @@ function Toggle({
   );
 }
 
+function fmt(n: number) {
+  if (n < 10) return (Math.round(n * 10) / 10).toString();
+  return Math.round(n).toLocaleString();
+}
+
 function Index() {
   const [kind, setKind] = useState<Kind>("images");
   const [platform, setPlatform] = useState(PLATFORMS[0]);
   const [imageCount, setImageCount] = useState("");
-  const [res, setRes] = useState("720p HD");
+  const [imageRes, setImageRes] = useState("Standard 1024×1024");
   const [clips, setClips] = useState("");
+  const [res, setRes] = useState("720p HD");
   const [secs, setSecs] = useState("");
   const [videoAudio, setVideoAudio] = useState(false);
   const [audioMin, setAudioMin] = useState("");
   const [prompts, setPrompts] = useState("");
   const [complex, setComplex] = useState(false);
-  const [hours, setHours] = useState("");
+  const [features, setFeatures] = useState("");
+  const [revisions, setRevisions] = useState("");
   const [models, setModels] = useState("");
   const [result, setResult] = useState<number | null>(null);
 
   function calculate() {
     let wh = 0;
-    if (kind === "images") wh = num(imageCount) * 1.7;
+    if (kind === "images") wh = num(imageCount) * (IMAGE_WH[imageRes] ?? 1.7);
     if (kind === "video") {
       const per = RES_WH[res] ?? 90;
       const clipScale = num(secs) > 0 ? num(secs) / 8 : 1;
@@ -116,7 +129,7 @@ function Index() {
     }
     if (kind === "audio") wh = num(audioMin) * 20;
     if (kind === "text") wh = num(prompts) * (complex ? 1.7 : 0.17);
-    if (kind === "code") wh = num(hours) * 1250;
+    if (kind === "code") wh = num(features) * 250 + num(revisions) * 125;
     if (kind === "model3d") wh = num(models) * 1.7;
     setResult(wh);
   }
@@ -125,22 +138,44 @@ function Index() {
   const big = wh >= 1000 ? (wh / 1000).toFixed(2) : wh < 10 ? wh.toFixed(2) : Math.round(wh).toLocaleString();
   const unit = wh >= 1000 ? "kilowatt-hours" : "watt-hours";
 
-  function equivalencies(): string {
-    const fridge = (wh / 40).toFixed(wh / 40 < 10 ? 1 : 0);
-    if (wh < 50) {
-      const phones = (wh / 10).toFixed(wh / 10 < 10 ? 1 : 0);
-      return `That's like ${phones} full smartphone charges.`;
+  // Two equivalencies, side by side, per threshold logic.
+  // Vibe Coding defaults to steaks + refrigerator hours at any scale.
+  function equivalencies(): { value: string; label: string }[] {
+    const phones = fmt(wh / 12);
+    const bulb = fmt(wh / 9);
+    const steaks = fmt(wh / 220);
+    const fridgeHours = fmt(wh / 62.5);
+    const fridgeDays = fmt(wh / 1500);
+    const miles = fmt(wh / 330);
+
+    if (kind === "code") {
+      return [
+        { value: steaks, label: "steaks cooked" },
+        { value: fridgeHours, label: "hours of fridge power" },
+      ];
     }
-    if (wh <= 500) {
-      const bulb = Math.round(wh / 9);
-      return `That's like leaving a light bulb on for ${bulb} hours — or powering your fridge for ${fridge} days.`;
+    if (wh < 100) {
+      return [
+        { value: phones, label: "smartphone charges" },
+        { value: bulb, label: "LED bulb hours" },
+      ];
     }
-    if (wh <= 5000) {
-      const steaks = Math.round(wh / 220);
-      return `That's like grilling ${steaks} steaks on an electric grill — or powering your fridge for ${fridge} days.`;
+    if (wh < 1500) {
+      return [
+        { value: steaks, label: "steaks cooked" },
+        { value: phones, label: "smartphone charges" },
+      ];
     }
-    const miles = (wh / 330).toFixed(1);
-    return `That's like driving ${miles} miles in a gas car — or powering your fridge for ${fridge} days.`;
+    if (wh < 15000) {
+      return [
+        { value: fridgeDays, label: "days of fridge power" },
+        { value: steaks, label: "steaks cooked" },
+      ];
+    }
+    return [
+      { value: fridgeDays, label: "days of fridge power" },
+      { value: miles, label: "miles driven" },
+    ];
   }
 
   return (
@@ -163,10 +198,20 @@ function Index() {
             </div>
 
             {kind === "images" && (
-              <div className="field">
-                <label className="field-label">02 — How many images did you generate?</label>
-                <input type="number" min="0" value={imageCount} onChange={(e) => setImageCount(e.target.value)} placeholder="0" />
-              </div>
+              <>
+                <div className="field">
+                  <label className="field-label">02 — How many images did you generate?</label>
+                  <input type="number" min="0" value={imageCount} onChange={(e) => setImageCount(e.target.value)} placeholder="0" />
+                </div>
+                <div className="field">
+                  <label className="field-label">What resolution?</label>
+                  <select value={imageRes} onChange={(e) => setImageRes(e.target.value)}>
+                    {Object.keys(IMAGE_WH).map((r) => (
+                      <option key={r}>{r}</option>
+                    ))}
+                  </select>
+                </div>
+              </>
             )}
 
             {kind === "video" && (
@@ -204,15 +249,21 @@ function Index() {
                   <label className="field-label">02 — How many prompts / messages?</label>
                   <input type="number" min="0" value={prompts} onChange={(e) => setPrompts(e.target.value)} placeholder="0" />
                 </div>
-                <Toggle label="Complex reasoning tasks?" value={complex} onChange={setComplex} />
+                <Toggle label="Were any of them complex reasoning tasks?" value={complex} onChange={setComplex} />
               </>
             )}
 
             {kind === "code" && (
-              <div className="field">
-                <label className="field-label">02 — How many hours was the session?</label>
-                <input type="number" min="0" step="0.25" value={hours} onChange={(e) => setHours(e.target.value)} placeholder="0" />
-              </div>
+              <>
+                <div className="field">
+                  <label className="field-label">02 — How many features or screens did you build?</label>
+                  <input type="number" min="0" value={features} onChange={(e) => setFeatures(e.target.value)} placeholder="0" />
+                </div>
+                <div className="field">
+                  <label className="field-label">How many update / revision prompts did you send?</label>
+                  <input type="number" min="0" value={revisions} onChange={(e) => setRevisions(e.target.value)} placeholder="0" />
+                </div>
+              </>
             )}
 
             {kind === "model3d" && (
@@ -220,7 +271,7 @@ function Index() {
                 <label className="field-label">02 — How many models generated?</label>
                 <input type="number" min="0" value={models} onChange={(e) => setModels(e.target.value)} placeholder="0" />
                 <p className="disclaimer">
-                  3D energy data is estimated from image-generation equivalents — no peer-reviewed figures exist yet.
+                  3D energy data is estimated based on image-generation equivalents as no peer-reviewed data exists yet.
                 </p>
               </div>
             )}
@@ -244,7 +295,14 @@ function Index() {
           <p className="field-label">Your session used</p>
           <div className="bignum">{big}</div>
           <p className="unit">{unit}</p>
-          <p className="equiv">{equivalencies()}</p>
+          <div className="equiv-grid">
+            {equivalencies().map((e) => (
+              <div key={e.label} className="equiv-item">
+                <div className="equiv-value">{e.value}</div>
+                <div className="equiv-label">{e.label}</div>
+              </div>
+            ))}
+          </div>
           <p className="note">
             Estimates based on peer-reviewed research from Hugging Face, Carnegie Mellon University, MIT, and WSJ
             reporting. Exact figures vary by model and hardware.
