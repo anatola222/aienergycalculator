@@ -58,6 +58,20 @@ const RES_WH: Record<string, number> = {
   "4K": 150,
 };
 
+const CODE_RANGES: { value: string; mid: number }[] = [
+  { value: "1–10", mid: 5 },
+  { value: "10–50", mid: 30 },
+  { value: "50–150", mid: 100 },
+  { value: "150–300", mid: 225 },
+  { value: "300+", mid: 400 },
+];
+
+const CODE_COMPLEXITY: { value: string; emoji: string; sub: string; wh: number }[] = [
+  { value: "Simple", emoji: "🪶", sub: "short instructions, small tweaks", wh: 125 },
+  { value: "Mixed", emoji: "⚡", sub: "some short, some detailed", wh: 175 },
+  { value: "Complex", emoji: "🧱", sub: "long prompts, full feature descriptions, lots of context", wh: 300 },
+];
+
 const ASPECT_RATIOS: { value: string; w: number; h: number }[] = [
   { value: "21:9", w: 21, h: 9 },
   { value: "16:9", w: 16, h: 9 },
