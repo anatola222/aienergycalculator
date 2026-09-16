@@ -46,10 +46,9 @@ const PLATFORMS = [
   "Other / Unknown",
 ];
 
-const IMAGE_WH: Record<string, number> = {
-  "Small 512×512": 0.05,
-  "Standard 1024×1024": 1.7,
-  "Large 1536+": 3.58,
+const QUALITY_WH: Record<string, number> = {
+  Standard: 1.7,
+  HD: 3.58,
 };
 
 const RES_WH: Record<string, number> = {
@@ -58,6 +57,24 @@ const RES_WH: Record<string, number> = {
   "1080p FHD": 110,
   "4K": 150,
 };
+
+const ASPECT_RATIOS: { value: string; w: number; h: number }[] = [
+  { value: "21:9", w: 21, h: 9 },
+  { value: "16:9", w: 16, h: 9 },
+  { value: "3:2", w: 3, h: 2 },
+  { value: "4:3", w: 4, h: 3 },
+  { value: "5:4", w: 5, h: 4 },
+  { value: "1:1", w: 1, h: 1 },
+  { value: "4:5", w: 4, h: 5 },
+  { value: "3:4", w: 3, h: 4 },
+  { value: "2:3", w: 2, h: 3 },
+  { value: "9:16", w: 9, h: 16 },
+];
+
+function arShape(w: number, h: number) {
+  const scale = 26 / Math.max(w, h);
+  return { width: `${Math.max(w * scale, 10)}px`, height: `${Math.max(h * scale, 10)}px` };
+}
 
 function num(v: string) {
   const n = parseFloat(v);
@@ -91,6 +108,36 @@ function Toggle({
         >
           No
         </button>
+      </div>
+    </div>
+  );
+}
+
+function Segmented({
+  value,
+  onChange,
+  options,
+  label,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: string[];
+  label: string;
+}) {
+  return (
+    <div className="field">
+      <label className="field-label">{label}</label>
+      <div className="toggle">
+        {options.map((o) => (
+          <button
+            key={o}
+            type="button"
+            className={value === o ? "toggle-btn is-on" : "toggle-btn"}
+            onClick={() => onChange(o)}
+          >
+            {o}
+          </button>
+        ))}
       </div>
     </div>
   );
