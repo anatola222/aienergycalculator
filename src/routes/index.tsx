@@ -58,6 +58,20 @@ const RES_WH: Record<string, number> = {
   "4K": 150,
 };
 
+const CODE_RANGES: { value: string; mid: number }[] = [
+  { value: "1–10", mid: 5 },
+  { value: "10–50", mid: 30 },
+  { value: "50–150", mid: 100 },
+  { value: "150–300", mid: 225 },
+  { value: "300+", mid: 400 },
+];
+
+const CODE_COMPLEXITY: { value: string; emoji: string; sub: string; wh: number }[] = [
+  { value: "Simple", emoji: "🪶", sub: "short instructions, small tweaks", wh: 125 },
+  { value: "Mixed", emoji: "⚡", sub: "some short, some detailed", wh: 175 },
+  { value: "Complex", emoji: "🧱", sub: "long prompts, full feature descriptions, lots of context", wh: 300 },
+];
+
 const ASPECT_RATIOS: { value: string; w: number; h: number }[] = [
   { value: "21:9", w: 21, h: 9 },
   { value: "16:9", w: 16, h: 9 },
@@ -161,8 +175,8 @@ function Index() {
   const [audioMin, setAudioMin] = useState("");
   const [prompts, setPrompts] = useState("");
   const [complex, setComplex] = useState(false);
-  const [features, setFeatures] = useState("");
-  const [revisions, setRevisions] = useState("");
+  const [codeRange, setCodeRange] = useState("50–150");
+  const [codeComplex, setCodeComplex] = useState("Mixed");
   const [models, setModels] = useState("");
   const [result, setResult] = useState<number | null>(null);
 
@@ -177,7 +191,11 @@ function Index() {
     }
     if (kind === "audio") wh = num(audioMin) * 20;
     if (kind === "text") wh = num(prompts) * (complex ? 1.7 : 0.17);
-    if (kind === "code") wh = num(features) * 250 + num(revisions) * 125;
+    if (kind === "code") {
+      const mid = CODE_RANGES.find((r) => r.value === codeRange)?.mid ?? 5;
+      const per = CODE_COMPLEXITY.find((c) => c.value === codeComplex)?.wh ?? 125;
+      wh = mid * per;
+    }
     if (kind === "model3d") wh = num(models) * 1.7;
     setResult(wh);
   }
@@ -322,12 +340,39 @@ function Index() {
             {kind === "code" && (
               <>
                 <div className="field">
-                  <label className="field-label">02 — How many features or screens did you build?</label>
-                  <input type="number" min="0" value={features} onChange={(e) => setFeatures(e.target.value)} placeholder="0" />
+                  <label className="field-label">02 — How many prompts did you send?</label>
+                  <div className="toggle code-range">
+                    {CODE_RANGES.map((r) => (
+                      <button
+                        key={r.value}
+                        type="button"
+                        className={codeRange === r.value ? "toggle-btn is-on" : "toggle-btn"}
+                        onClick={() => setCodeRange(r.value)}
+                        aria-pressed={codeRange === r.value}
+                      >
+                        {r.value}
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 <div className="field">
-                  <label className="field-label">How many update / revision prompts did you send?</label>
-                  <input type="number" min="0" value={revisions} onChange={(e) => setRevisions(e.target.value)} placeholder="0" />
+                  <label className="field-label">How complex were your prompts?</label>
+                  <div className="toggle code-complex">
+                    {CODE_COMPLEXITY.map((c) => (
+                      <button
+                        key={c.value}
+                        type="button"
+                        className={codeComplex === c.value ? "toggle-btn is-on" : "toggle-btn"}
+                        onClick={() => setCodeComplex(c.value)}
+                        aria-pressed={codeComplex === c.value}
+                      >
+                        <span className="cc-top">
+                          {c.emoji} {c.value}
+                        </span>
+                        <span className="cc-sub">{c.sub}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </>
             )}
