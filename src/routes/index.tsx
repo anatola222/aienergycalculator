@@ -35,8 +35,8 @@ const KINDS: { value: Kind; label: string }[] = [
 
 const PLATFORMS: Record<Kind, string[]> = {
   text: ["Claude (Anthropic)", "ChatGPT (OpenAI)", "Gemini (Google)", "Other / Unknown"],
-  video: ["Runway", "Kling", "Sora (OpenAI)", "Google Veo 3", "Midjourney", "Other / Unknown"],
-  images: ["Midjourney", "DALL·E (OpenAI)", "Claude (Anthropic)", "Runway", "Other / Unknown"],
+  video: ["Runway", "Kling", "Sora (OpenAI)", "Google Veo 3", "Seeddance", "Luma Dream Machine", "Midjourney", "Flora", "Other / Unknown"],
+  images: ["Midjourney", "DALL·E (OpenAI)", "Claude (Anthropic)", "Runway", "Flora", "Other / Unknown"],
   audio: ["ElevenLabs", "Suno", "Udio", "Other / Unknown"],
   code: ["Lovable", "Replit", "Codex (OpenAI)", "Claude (Anthropic)", "Cursor", "Other / Unknown"],
 };
